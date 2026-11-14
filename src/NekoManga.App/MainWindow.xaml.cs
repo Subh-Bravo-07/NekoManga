@@ -189,7 +189,11 @@ public partial class MainWindow
         var has = _rows.Count > 0;
         DropHint.Visibility = has ? Visibility.Collapsed : Visibility.Visible;
         ListPane.Visibility = has ? Visibility.Visible : Visibility.Collapsed;
-        TxtStatus.Text = has ? $"Pages ready: {_rows.Count} ♪" : "Ready ♪";
+        var readyText = new System.Resources.ResourceManager(
+            "NekoManga.App.Resources.Strings", typeof(MainWindow).Assembly).GetString(
+            "MainWindowReady", System.Globalization.CultureInfo.GetCultureInfo("ko"));
+        
+        TxtStatus.Text = has ? $"Pages ready: {_rows.Count} ♪" : readyText ?? "준비 완료 ♪";
         if (has && FileList.SelectedIndex < 0) FileList.SelectedIndex = 0;
     }
 

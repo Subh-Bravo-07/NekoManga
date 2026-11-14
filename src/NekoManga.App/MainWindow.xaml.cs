@@ -19,7 +19,7 @@ public class FileRow : INotifyPropertyChanged
     public required string Path { get; init; }
     public string Name => System.IO.Path.GetFileName(Path);
 
-    private string _stage = "대기";
+    private string _stage = "Waiting";
     public string Stage { get => _stage; set { _stage = value; Notify(nameof(Stage)); } }
 
     private double _percent;
@@ -106,10 +106,10 @@ public partial class MainWindow
         // 전용 AI 유무·복원 방식에 맞춰 설명을 바꾼다 — 문구는 설정 창 요약과 같은 곳(DecensorLabels)에서
         bool censorNet = File.Exists(Path.Combine(App.Settings.RuntimeRoot, "models", NekoManga.Core.Engine.CensorNet.ModelFile));
         HintDecensor.Text = DecensorLabels.Card(App.Settings);
-        HintDecensor.ToolTip = "① 찾기: " + DecensorLabels.Find(App.Settings.DecensorTarget, App.Settings.DecensorLegacyAssist, censorNet)
-            + "\n② 지우기: " + DecensorLabels.Fix(App.Settings.DecensorMode, App.Settings.DecensorTarget,
+        HintDecensor.ToolTip = "① Detect: " + DecensorLabels.Find(App.Settings.DecensorTarget, App.Settings.DecensorLegacyAssist, censorNet)
+            + "\n② Restore: " + DecensorLabels.Fix(App.Settings.DecensorMode, App.Settings.DecensorTarget,
                                                 App.Settings.DecensorLegacyAssist, App.Settings.DecensorAssistRepair)
-            + "\n(⚙ 설정 → 검열 제거에서 바꿀 수 있어요)";
+            + "\n(Change this under ⚙ Settings → Censorship Removal.)";
     }
 
     // ── 파일 추가 ──────────────────────────────────────────────
@@ -129,7 +129,7 @@ public partial class MainWindow
         var dlg = new Microsoft.Win32.OpenFileDialog
         {
             Multiselect = true,
-            Filter = "만화 이미지|" + string.Join(";", ImageExts.Select(e => "*" + e)) + "|모든 파일|*.*",
+            Filter = "Manga images|" + string.Join(";", ImageExts.Select(e => "*" + e)) + "|All files|*.*",
         };
         if (dlg.ShowDialog() == true) AddPaths(dlg.FileNames);
     }
@@ -189,7 +189,7 @@ public partial class MainWindow
         var has = _rows.Count > 0;
         DropHint.Visibility = has ? Visibility.Collapsed : Visibility.Visible;
         ListPane.Visibility = has ? Visibility.Visible : Visibility.Collapsed;
-        TxtStatus.Text = has ? $"{_rows.Count}장 준비됨 ♪" : "준비 완료 ♪";
+        TxtStatus.Text = has ? $"Pages ready: {_rows.Count} ♪" : "Ready ♪";
         if (has && FileList.SelectedIndex < 0) FileList.SelectedIndex = 0;
     }
 
@@ -274,7 +274,7 @@ public partial class MainWindow
     private async void ShowPreview(FileRow? row)
     {
         int gen = ++_previewGen;
-        if (row == null) { ImgPreview.Source = null; TxtPreviewName.Text = "미리보기"; return; }
+        if (row == null) { ImgPreview.Source = null; TxtPreviewName.Text = "Preview"; return; }
         var path = row.ViewPath;
         TxtPreviewName.Text = Path.GetFileName(path);
         // 패널 실제 높이 × DPI × 1.5 (확대 여유), 600~1600 사이
@@ -300,7 +300,7 @@ public partial class MainWindow
     {
         if (_cts != null || _rows.Count < 2) return;
         SortRowsByName();
-        TxtStatus.Text = "이름순으로 정렬했어요";
+        TxtStatus.Text = "Sorted by name";
     }
 
     /// <summary>선택한 항목을 목록에서 뺀다 (디스크의 파일은 건드리지 않는다). Delete 키와 공용.</summary>
@@ -336,14 +336,14 @@ public partial class MainWindow
     {
         if (_rows.Count == 0)
         {
-            TxtStatus.Text = "먼저 이미지를 올려주세요 (・ω・`)";
+            TxtStatus.Text = "Add images first (・ω・`)";
             return;
         }
         var s = App.Settings;   // 러너는 살아 있는 설정을 쓴다 — 표지 색 태그 캐시(ColorRefTags)를 거기 써서 저장하므로 사본이면 캐시가 안 남는다
         var pathSnapshot = App.Settings.ShallowClone();   // 경로 계산만 시작 때 출력 폴더로 고정 — 작업 중 설정 창에서 바꿔도 이 작업의 결과물은 옛 폴더에 쓰인다 (러너도 같은 값을 박제한다)
         if (!s.EnableAutoColor && !s.EnableDecensor && !s.EnableTranslate)
         {
-            TxtStatus.Text = "켜진 기능이 없어요 — 위 토글을 하나 이상 켜주세요";
+            TxtStatus.Text = "Turn on at least one feature above.";
             return;
         }
 
@@ -352,7 +352,7 @@ public partial class MainWindow
             || (s.EnableDecensor && s.DecensorMode is "ComfyRegen" or "ComfyCustom");
         if (needComfy && !s.ComfyAvailable)
         {
-            TxtStatus.Text = "채색·재생성·커스텀 검열 제거는 ComfyUI가 필요해요 — 설정 → 구성요소에서 설치해 주세요";
+            TxtStatus.Text = "Colorization, regeneration, and custom censorship removal require ComfyUI. Install it under Settings → Components.";
             return;
         }
 
@@ -362,15 +362,15 @@ public partial class MainWindow
         if (pending.Count == 0)
         {
             // 전부 끝난 목록에서 다시 [작업 시작] = 전부 다시 돌리라는 뜻(설정을 바꿔 다시 돌리는 흔한 흐름) — 결과물을 덮어쓰니 한 번 묻는다
-            if (System.Windows.MessageBox.Show($"모든 장({_rows.Count}장)이 이미 완료됐어요. 전부 다시 돌릴까요?\n결과물과 저장된 마스크가 새 결과로 바뀝니다.", "다시 돌리기",
+            if (System.Windows.MessageBox.Show($"All pages have already been processed ({_rows.Count} total). Process them again?\nThis will replace the existing results and saved masks.", "Process Again",
                     System.Windows.MessageBoxButton.YesNo, System.Windows.MessageBoxImage.Question) != System.Windows.MessageBoxResult.Yes)
             {
-                TxtStatus.Text = "그대로 두었어요";
+                TxtStatus.Text = "Kept existing results";
                 return;
             }
             foreach (var r in _rows)
             {
-                r.Done = false; r.OutPath = null; r.Stage = "대기"; r.Percent = 0;
+                r.Done = false; r.OutPath = null; r.Stage = "Waiting"; r.Percent = 0;
                 if (r.ViewPath != r.Path) { r.ViewPath = r.Path; _ = LoadThumbAsync(r); }   // 이번에 실패·멈춘 장이 지난 결과를 이번 것인 양 보이지 않게
             }
             pending = _rows.ToList(); skipped = 0;
@@ -378,7 +378,7 @@ public partial class MainWindow
         _cts = new CancellationTokenSource();
         BtnRun.IsEnabled = false;
         BtnStop.IsEnabled = true;
-        TxtStatus.Text = skipped > 0 ? $"완료된 {skipped}장은 건너뛰고 {pending.Count}장 작업 중..." : "작업 중... (ฅ'ω'ฅ)";
+        TxtStatus.Text = skipped > 0 ? $"Processing {pending.Count} pages. Skipping {skipped} already completed." : "Processing... (ฅ'ω'ฅ)";
 
         using var runner = new PipelineRunner(s);
         _runner = runner;
@@ -391,8 +391,8 @@ public partial class MainWindow
             // 전체 경로로 찾는다 — 이름만 보면 vol1\01.jpg·vol2\01.jpg가 한 행에 겹친다
             var row = _rows.FirstOrDefault(r => string.Equals(r.Path, p.File, StringComparison.OrdinalIgnoreCase));
             if (row == null) return;
-            row.Stage = p.Error != null ? $"실패 — {p.Error}"
-                      : p.Stage.StartsWith("검토 대기 · ") ? "검토 대기 (더블클릭해 수정) · " + p.Stage["검토 대기 · ".Length..]
+            row.Stage = p.Error != null ? $"Failed — {p.Error}"
+                      : p.Stage.StartsWith("검토 대기 · ") ? "Pending Review (double-click to edit) · " + p.Stage["검토 대기 · ".Length..]
                       : p.Stage;
             if (p.Percent >= 0) row.Percent = p.Percent;   // 경고 보고(-1)는 진행률을 건드리지 않는다
             if (p.Done && p.Error == null) { row.Done = true; row.OutPath = PipelineRunner.OutputPathFor(pathSnapshot, row.Path); ShowResultFor(row); }   // 끝난 장은 바로 결과물로 (경로는 이 작업의 폴더로 박제)
@@ -403,13 +403,13 @@ public partial class MainWindow
         runner.PageWaiting += pg => Dispatcher.BeginInvoke(() =>
         {
             RefreshWaitingUi();   // 행 상태 글은 진행 보고(progress)가 쓴다 — 두 경로가 순서 없이 겹치지 않게
-            TxtStatus.Text = "검열이 감지된 장은 '검토 대기'예요 — 더블클릭해 마스크를 확인·수정하고 진행하세요 (나머지 장은 계속 처리 중)";
+            TxtStatus.Text = "Pages with detected censorship are marked Pending Review. Double-click a page to review and edit its mask before continuing. Other pages are still processing.";
         });
 
         // 검토 흐름(설정 DecensorReview): 러너가 1차(번역+감지)를 끝내면 UI 스레드에서 검토 창을 띄워 마스크를 고치게 한다
         runner.ReviewMasks = (pages, token) => Dispatcher.InvokeAsync(() =>
         {
-            TxtStatus.Text = "검열 마스크 검토 중 — 창에서 확인·수정 후 [검열 제거 시작]을 누르세요";
+            TxtStatus.Text = "Review and edit the masks in the review window, then click Start Censorship Removal.";
             var w = new MaskReviewWindow(pages) { Owner = this };
             return w.ShowDialog() == true;
         }).Task;
@@ -418,22 +418,22 @@ public partial class MainWindow
         {
             await Task.Run(() => runner.RunAsync(files, progress, _cts.Token));
             RefreshResultViews();         // 목록 썸네일·미리보기를 결과물로 바꿔 바로 확인할 수 있게
-            var failed = _rows.Count(r => r.Stage.StartsWith("실패"));
+            var failed = _rows.Count(r => r.Stage.StartsWith("Failed"));
             TxtStatus.Text = failed == 0
-                ? $"전부 완료! 총 {_rows.Count}장 (ﾉ´ヮ`)ﾉ*:･ﾟ✧"
-                : $"완료 — 성공 {_rows.Count - failed}장 / 실패 {failed}장";
+                ? $"All pages complete ({_rows.Count} total)! (ﾉ´ヮ`)ﾉ*:･ﾟ✧"
+                : $"Finished — Succeeded: {_rows.Count - failed} / Failed: {failed}";
         }
         catch (OperationCanceledException)
         {
-            TxtStatus.Text = "멈췄어요";
+            TxtStatus.Text = "Processing stopped";
             // 진행 중이던 장이 '번역 중' 같은 상태로 남지 않게 — 끝난(완료/실패) 장만 그대로 둔다
             foreach (var r in _rows)
-                if (!r.Done && !r.Stage.StartsWith("실패") && r.Stage != "대기")
-                    r.Stage = "멈춤";
+                if (!r.Done && !r.Stage.StartsWith("Failed") && r.Stage != "Waiting")
+                    r.Stage = "Stopped";
         }
         catch (Exception ex)
         {
-            TxtStatus.Text = "오류: " + ex.Message;
+            TxtStatus.Text = "Error: " + ex.Message;
         }
         finally
         {
@@ -453,13 +453,13 @@ public partial class MainWindow
     {
         int n = _runner?.WaitingFiles.Count ?? 0;
         BtnProceedAll.Visibility = n > 0 ? Visibility.Visible : Visibility.Collapsed;
-        if (n > 0) BtnProceedAll.Content = $"대기 중 {n}장 전부 진행";
+        if (n > 0) BtnProceedAll.Content = $"Process All Pending Pages ({n})";
     }
 
     private void BtnProceedAll_Click(object sender, RoutedEventArgs e)
     {
         int n = _runner?.ConfirmAll() ?? 0;
-        TxtStatus.Text = n > 0 ? $"검토 대기 {n}장을 지금 마스크 그대로 검열 제거로 보냈어요" : "검토 대기 중인 장이 없어요";
+        TxtStatus.Text = n > 0 ? $"Started censorship removal using the current masks. Pages submitted: {n}." : "No pages pending review";
         RefreshWaitingUi();
     }
 
@@ -471,7 +471,7 @@ public partial class MainWindow
         if (dir != null && Directory.Exists(dir))
             Process.Start(new ProcessStartInfo("explorer.exe", $"\"{dir}\"") { UseShellExecute = true });
         else
-            TxtStatus.Text = "아직 결과물이 없어요";
+            TxtStatus.Text = "No results yet";
     }
 
     /// <summary>목록에서 고른 원고의 결과물을 띄운다. 자동 감지가 놓친 검열을 거기서 직접 지울 수 있다.
@@ -481,7 +481,7 @@ public partial class MainWindow
         row ??= _rows.FirstOrDefault();
         if (row == null)
         {
-            TxtStatus.Text = "먼저 이미지를 올려주세요";
+            TxtStatus.Text = "Add images first";
             return;
         }
 
@@ -532,7 +532,7 @@ public partial class MainWindow
             if (_pendingUpdate != null)
             {
                 BtnUpdate.Visibility = Visibility.Visible;
-                BtnUpdate.Content = $"🎀 v{_pendingUpdate.TargetFullRelease.Version} 업데이트!";
+                BtnUpdate.Content = $"🎀 Update to v{_pendingUpdate.TargetFullRelease.Version}";
             }
         }
         catch { /* 오프라인 등 — 조용히 넘어간다 */ }
@@ -545,11 +545,11 @@ public partial class MainWindow
         try
         {
             await _update.DownloadAndApplyAsync(_pendingUpdate,
-                p => Dispatcher.Invoke(() => TxtStatus.Text = $"업데이트 다운로드 {p}%"));
+                p => Dispatcher.Invoke(() => TxtStatus.Text = $"Downloading update: {p}%"));
         }
         catch (Exception ex)
         {
-            TxtStatus.Text = "업데이트 실패: " + ex.Message;
+            TxtStatus.Text = "Update failed: " + ex.Message;
             BtnUpdate.IsEnabled = true;
         }
     }

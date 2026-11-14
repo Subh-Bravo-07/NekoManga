@@ -45,15 +45,15 @@
                                      Checked="Feature_Changed" Unchecked="Feature_Changed"/>
                     <StackPanel>
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Style="{StaticResource CardTitle}" Text="🎨 자동 채색"/>
+                            <TextBlock Style="{StaticResource CardTitle}" Text="🎨 Auto Colorize"/>
                             <Border x:Name="BadgeColor" Background="#33FFB020" CornerRadius="0"
                                     Padding="6,1" Margin="8,0,0,0" Visibility="Collapsed"
-                                    ToolTip="이 기능은 ComfyUI가 필요해요 — 설정 → 구성요소에서 설치해 주세요 (약 11GB)">
-                                <TextBlock Text="⚠ ComfyUI 설치 필요" FontSize="10.5" Foreground="#FFCF6E"/>
+                                    ToolTip="Install ComfyUI under Settings → Components (about 11 GB) to use this feature.">
+                                <TextBlock Text="⚠ Requires ComfyUI" FontSize="10.5" Foreground="#FFCF6E"/>
                             </Border>
                         </StackPanel>
                         <TextBlock Style="{StaticResource HintText}" Margin="0,4,0,0"
-                                   Text="흑백 원고를 AI가 풀컬러로"/>
+                                   Text="Colorize black-and-white pages with AI"/>
                     </StackPanel>
                 </DockPanel>
             </Border>
@@ -64,15 +64,15 @@
                                      Checked="Feature_Changed" Unchecked="Feature_Changed"/>
                     <StackPanel>
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Style="{StaticResource CardTitle}" Text="🙈 검열 제거"/>
+                            <TextBlock Style="{StaticResource CardTitle}" Text="🙈 Censorship Removal"/>
                             <Border x:Name="BadgeDecensor" Background="#33FFB020" CornerRadius="0"
                                     Padding="6,1" Margin="8,0,0,0" Visibility="Collapsed"
-                                    ToolTip="재생성·커스텀 모드는 ComfyUI가 필요해요 — 기본 모드는 바로 쓸 수 있어요">
-                                <TextBlock Text="⚠ GPU 복원 모드: ComfyUI 필요" FontSize="10.5" Foreground="#FFCF6E"/>
+                                    ToolTip="Regeneration and custom modes require ComfyUI. Basic mode is ready to use.">
+                                <TextBlock Text="⚠ GPU restoration requires ComfyUI" FontSize="10.5" Foreground="#FFCF6E"/>
                             </Border>
                         </StackPanel>
                         <TextBlock x:Name="HintDecensor" Style="{StaticResource HintText}" Margin="0,4,0,0"
-                                   Text="모자이크를 찾아 자연스럽게 복원"/>
+                                   Text="Detect mosaics and restore the affected areas"/>
                     </StackPanel>
                 </DockPanel>
             </Border>
@@ -82,9 +82,9 @@
                     <ui:ToggleSwitch x:Name="SwTranslate" DockPanel.Dock="Right" VerticalAlignment="Center"
                                      Checked="Feature_Changed" Unchecked="Feature_Changed"/>
                     <StackPanel>
-                        <TextBlock Style="{StaticResource CardTitle}" Text="💬 번역"/>
+                        <TextBlock Style="{StaticResource CardTitle}" Text="💬 Translate"/>
                         <TextBlock Style="{StaticResource HintText}" Margin="0,4,0,0"
-                                   Text="말풍선을 읽고 한국어로 식자까지 · 내장 AI"/>
+                                   Text="Read speech bubbles and letter them in Korean with built-in AI"/>
                     </StackPanel>
                 </DockPanel>
             </Border>
@@ -92,14 +92,14 @@
             <StackPanel Grid.Column="3" VerticalAlignment="Center">
                 <ui:Button x:Name="BtnRun" Click="BtnRun_Click" Appearance="Primary"
                            FontWeight="Bold" FontSize="15" Padding="22,12"
-                           Content="✦ 시작! (ﾉ´ヮ`)ﾉ*:･ﾟ✧"/>
+                           Content="✦ Start! (ﾉ´ヮ`)ﾉ*:･ﾟ✧"/>
                 <ui:Button x:Name="BtnStop" Click="BtnStop_Click" IsEnabled="False"
                            Margin="0,6,0,0" Padding="22,6" HorizontalAlignment="Stretch"
-                           Content="멈추기"/>
+                           Content="Stop"/>
                 <!-- 검토 대기 페이지가 있을 때만: 전부 현재 마스크 그대로 검열 제거로 보낸다 (2026-10-21 페이지별 검토) -->
                 <ui:Button x:Name="BtnProceedAll" Click="BtnProceedAll_Click" Visibility="Collapsed"
                            Margin="0,6,0,0" Padding="22,6" HorizontalAlignment="Stretch" Appearance="Caution"
-                           Content="대기 중 전부 진행" ToolTip="검토 대기 중인 장을 지금 마스크 그대로 검열 제거로 보내요"/>
+                           Content="Process All Pending Pages" ToolTip="Run censorship removal on all pending pages using their current masks."/>
             </StackPanel>
         </Grid>
 
@@ -114,12 +114,12 @@
                     <Rectangle Fill="{DynamicResource MangaGrid}"/>
                     <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
                         <Image Source="{DynamicResource NekoLogo}" Width="96" Height="96" HorizontalAlignment="Center"/>
-                        <TextBlock Text="만화 이미지나 폴더를 여기에 끌어다 놓으세요" FontSize="16"
+                        <TextBlock Text="Drop manga images or a folder here" FontSize="16"
                                    Margin="0,16,0,0" HorizontalAlignment="Center" FontWeight="SemiBold"
                                    Foreground="{DynamicResource NekoText}"/>
-                        <TextBlock Text="png · jpg · webp 지원" Style="{StaticResource HintText}"
+                        <TextBlock Text="Supports PNG, JPG, and WebP" Style="{StaticResource HintText}"
                                    Margin="0,6,0,0" HorizontalAlignment="Center"/>
-                        <ui:Button Content="파일 고르기" Click="BtnPick_Click" Margin="0,16,0,0"
+                        <ui:Button Content="Choose Files" Click="BtnPick_Click" Margin="0,16,0,0"
                                    HorizontalAlignment="Center" Padding="18,8"/>
                     </StackPanel>
                 </Grid>
@@ -149,9 +149,9 @@
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
-                            <GridViewColumn Header="파일" Width="190" DisplayMemberBinding="{Binding Name}"/>
-                            <GridViewColumn Header="상태" Width="190" DisplayMemberBinding="{Binding Stage}"/>
-                            <GridViewColumn Header="진행" Width="100">
+                            <GridViewColumn Header="File" Width="190" DisplayMemberBinding="{Binding Name}"/>
+                            <GridViewColumn Header="Status" Width="190" DisplayMemberBinding="{Binding Stage}"/>
+                            <GridViewColumn Header="Progress" Width="100">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <ProgressBar Value="{Binding Percent}" Minimum="0" Maximum="100"
@@ -174,9 +174,9 @@
                         <Border DockPanel.Dock="Top" Background="{DynamicResource NekoStroke}" Padding="8,4">
                             <TextBlock x:Name="TxtPreviewName" Foreground="{DynamicResource NekoBg}"
                                        FontWeight="Bold" FontSize="12" TextTrimming="CharacterEllipsis"
-                                       Text="미리보기"/>
+                                       Text="Preview"/>
                         </Border>
-                        <ui:Button x:Name="BtnEditThis" DockPanel.Dock="Bottom" Content="✏ 이 장 수정하기"
+                        <ui:Button x:Name="BtnEditThis" DockPanel.Dock="Bottom" Content="✏ Edit This Page"
                                    Click="BtnViewResult_Click" Margin="8" HorizontalAlignment="Stretch"
                                    HorizontalContentAlignment="Center" Padding="10,6"/>
                         <!-- 격자 작업판 + 원고(그림자·테두리) + 네 귀 트림마크 -->
@@ -213,19 +213,19 @@
                 BorderBrush="{DynamicResource NekoStroke}">
             <DockPanel>
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
-                    <ui:Button Content="⚙ 설정" Click="BtnSettings_Click" Padding="14,6"/>
-                    <ui:Button Content="📂 결과 폴더" Click="BtnOpenOutput_Click" Padding="14,6" Margin="8,0,0,0"/>
-                    <ui:Button x:Name="BtnViewResult" Content="🔍 결과 보기·수정" Click="BtnViewResult_Click"
+                    <ui:Button Content="⚙ Settings" Click="BtnSettings_Click" Padding="14,6"/>
+                    <ui:Button Content="📂 Output Folder" Click="BtnOpenOutput_Click" Padding="14,6" Margin="8,0,0,0"/>
+                    <ui:Button x:Name="BtnViewResult" Content="🔍 View and Edit Results" Click="BtnViewResult_Click"
                                Padding="14,6" Margin="8,0,0,0"/>
-                    <ui:Button x:Name="BtnSort" Content="이름순 정렬" Click="BtnSort_Click" Padding="14,6" Margin="8,0,0,0"/>
-                    <ui:Button x:Name="BtnRemoveSel" Content="선택 삭제" Click="BtnRemoveSel_Click" Padding="14,6" Margin="8,0,0,0"
-                               ToolTip="목록에서만 빠져요 (파일은 그대로) — Delete 키로도 돼요"/>
-                    <ui:Button x:Name="BtnClear" Content="목록 비우기" Click="BtnClear_Click" Padding="14,6" Margin="8,0,0,0"/>
-                    <ui:Button x:Name="BtnUpdate" Content="🎀 새 버전!" Click="BtnUpdate_Click"
+                    <ui:Button x:Name="BtnSort" Content="Sort by Name" Click="BtnSort_Click" Padding="14,6" Margin="8,0,0,0"/>
+                    <ui:Button x:Name="BtnRemoveSel" Content="Remove Selected" Click="BtnRemoveSel_Click" Padding="14,6" Margin="8,0,0,0"
+                               ToolTip="Remove the selected items from the list. You can also press Delete. Your files stay on disk."/>
+                    <ui:Button x:Name="BtnClear" Content="Clear List" Click="BtnClear_Click" Padding="14,6" Margin="8,0,0,0"/>
+                    <ui:Button x:Name="BtnUpdate" Content="🎀 Update Available!" Click="BtnUpdate_Click"
                                Appearance="Caution" Padding="14,6" Margin="8,0,0,0" Visibility="Collapsed"/>
                 </StackPanel>
                 <TextBlock x:Name="TxtStatus" DockPanel.Dock="Right" VerticalAlignment="Center"
-                           Foreground="{DynamicResource NekoHint}" Text="준비 완료 ♪"/>
+                           Foreground="{DynamicResource NekoHint}" Text="Ready ♪"/>
                 <Border/>
             </DockPanel>
         </Border>
